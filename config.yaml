@@ -1,0 +1,112 @@
+# =====================================
+# 交易系统全局配置
+# =====================================
+
+# 支持的交易所列表
+exchanges:
+  - binance    # 币安交易所
+  - huobi      # 火币交易所
+  - okex       # OKEx交易所
+
+# 默认使用的交易所
+default_exchange: binance
+
+# 交易所API密钥配置
+api_keys:
+  binance:    # 币安交易所API密钥
+    api_key: "你的API_KEY"
+    secret_key: "你的SECRET_KEY"
+  huobi:      # 火币交易所API密钥
+    api_key: "你的API_KEY"
+    secret_key: "你的SECRET_KEY"
+  okex:       # OKEx交易所API密钥
+    api_key: "你的API_KEY"
+    secret_key: "你的SECRET_KEY"
+
+# 测试模式开关 - 设置为true时使用交易所的测试环境
+test_mode: true
+
+# 空跑模式开关 - 设置为true时只模拟交易，不实际下单
+dry_run: true
+
+# 日志文件存储目录
+log_dir: logs
+
+# 冰山订单阈值 - 当订单大小超过此值时，将拆分为多个小订单执行
+iceberg_threshold: 1.0
+
+# 最小订单金额(USDT) - 低于此金额的订单不会执行
+min_order_amount: 10.0
+
+# =====================================
+# 策略配置
+# =====================================
+strategies:
+  # -----------------------------
+  # 均线交叉策略
+  # -----------------------------
+  ma_cross:
+    # 是否启用此策略
+    enabled: true
+    
+    # 交易的币对列表
+    symbols:
+      - BTC/USDT   # 比特币/USDT
+      - ETH/USDT   # 以太坊/USDT
+    
+    # 策略参数
+    parameters:
+      # --- 基本参数 ---
+      short_window: 5         # 短期均线周期
+      long_window: 20         # 长期均线周期
+      timeframe: 1h           # K线时间周期(1m, 5m, 15m, 1h, 4h, 1d等)
+      
+      # --- 仓位管理 ---
+      position_size: 0.1      # 每次交易使用资金比例(总资金的10%)
+      max_positions: 3        # 最大持仓数量
+      
+      # --- 风险控制 ---
+      stop_loss_pct: 3.0      # 止损百分比(价格下跌3%触发止损)
+      take_profit_pct: 5.0    # 止盈百分比(价格上涨5%触发止盈)
+      trailing_stop: true     # 是否启用移动止损
+      trailing_stop_distance: 2.0  # 移动止损距离(价格的2%)
+      
+      # --- 其他参数 ---
+      days_back: 30           # 回溯历史数据的天数
+      check_interval: 60      # 检查行情的间隔(秒)
+      min_volume_usd: 1000000 # 最小24小时交易量(USDT)，低于此值不交易
+      max_trades_per_day: 3   # 每日最大交易次数
+      
+      # --- Ichimoku云图参数(高级) ---
+      use_ichimoku: false     # 是否使用Ichimoku云图辅助判断
+      ichimoku_fast: 9        # 转换线周期
+      ichimoku_slow: 26       # 基准线周期
+      ichimoku_signal: 52     # 先行带周期
+
+  # -----------------------------
+  # RSI策略
+  # -----------------------------
+  rsi_strategy:
+    # 是否启用此策略
+    enabled: false
+    
+    # 交易的币对列表
+    symbols:
+      - BTC/USDT   # 比特币/USDT
+    
+    # 策略参数
+    parameters:
+      # --- 技术指标参数 ---
+      rsi_period: 14         # RSI计算周期
+      rsi_overbought: 70     # RSI超买阈值，高于此值考虑卖出
+      rsi_oversold: 30       # RSI超卖阈值，低于此值考虑买入
+      timeframe: 4h          # K线时间周期
+      
+      # --- 仓位管理 ---
+      position_size: 0.1    # 每次交易使用资金比例(总资金的10%)
+      max_positions: 2       # 最大持仓数量
+      
+      # --- 风险控制 ---
+      stop_loss_pct: 2.5     # 止损百分比
+      take_profit_pct: 4.0   # 止盈百分比
+      max_trades_per_day: 2  # 每日最大交易次数 
